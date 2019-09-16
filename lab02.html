@@ -1,0 +1,49 @@
+<HTML>
+<BODY>
+<canvas id="lab02" width='700' height='500'>
+</canvas>
+<canvas id="lab02_c" width='700' height='500'>
+</canvas>
+<script>
+        var canvas = document.getElementById("lab02");
+        var ctx = canvas.getContext("2d");
+
+        ctx.fillRect(10,10,10,10);
+
+        img = new Image();
+
+        img.setAttribute( 'crossOrigin', 'Anonymous');
+
+        img.onload=function() {
+                var canvas_c = document.getElementById("lab02_c");
+                var ctx_c = canvas_c.getContext("2d");
+                var idata_c = ctx_c.createImageData(canvas_c.width, canvas_c.height);
+
+                ctx.drawImage(img, 0, 0);
+                var idata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                console.log(idata);
+                for (let i=0; i<canvas.height; i++) {
+                        for (let j=0; j<canvas.width; j++) {
+                                var r = idata.data[(i*canvas.width+j)*4];
+                                var g = idata.data[(i*canvas.width+j)*4+1];
+                                var b = idata.data[(i*canvas.width+j)*4+2];
+                                var s = idata.data[(i*canvas.width+j)*4+3];
+                                if (idata.data[(i*canvas.width+j)*4+3]!= 0) {
+                                        idata_c[(i*canvas_c.width+j)*4] = r;
+                                        idata_c[(i*canvas_c.width+j)*4+1] = g;
+                                        idata_c[(i*canvas_c.width+j)*4+2] = b;
+                                        idata_c[(i*canvas_c.width+j)*4+3] = s;
+                                }
+                        }
+                }
+                ctx_c.putImageData(idata, 0, 0)
+
+
+        }
+        img.src = "https://www.tutorialspoint.com/images/QAicon.png";
+
+
+
+</script>
+</BODY>
+</HTML>

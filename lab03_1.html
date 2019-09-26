@@ -1,0 +1,42 @@
+<HTML>
+<BODY>
+<canvas id="lab03" width="500" height="400">
+</canvas>
+<script>
+        function Line(ctx, x0, y0, x1, y1) {
+                var y = y0;
+                var eps = 0;
+                var k=2*(y1-y0);
+                var s = 1;
+                for (var x=x0; x<=x1; x++) {
+                        ctx.fillRect(x*s, y*s, 1*s, 1*s);
+                        eps = eps+k;
+                        if (eps>(x1-x0)) {
+                                y++;
+                                eps = eps - 2*(x1-x0);
+                        }
+                }
+
+        }
+</script>
+<script>
+        var canvas = document.getElementById("lab03");
+        var ctx = canvas.getContext("2d");
+
+        var flag = 0;
+        canvas.addEventListener("click", function(event){
+                        if (!flag) {
+                                x0 = event.offsetX;
+                                y0 = event.offsetY;
+                                flag = 1;
+                        } else {
+                                x1 = event.offsetX;
+                                y1 = event.offsetY;
+                                Line(ctx, x0, y0, x1, y1);
+                                flag = 0;
+                        }
+                });
+
+</script>
+</BODY>
+</HTML>

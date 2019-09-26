@@ -1,0 +1,48 @@
+<HTML>
+<BODY>
+<canvas id="lab03" width="500" height="400">
+</canvas>
+<script>
+        function Line(idata, x0, y0, x1, y1) {
+                var y = y0;
+                var eps = 0;
+                var k=2*(y1-y0);
+                var pw=1;
+                for (var x=x0; x<=x1; x++) {
+                        idata.data[(x+y*idata.width)*4+3]=255*
+                                Math.pow(Math.abs(0.5- (eps/(2*(x1-x0))) ),pw);
+                        idata.data[(x+(y+1)*idata.width)*4+3]=255*
+                                Math.pow(Math.abs(0.5+ (eps/(2*(x1-x0))) ), pw);
+                        eps = eps+k;
+                        if (eps>(x1-x0)) {
+                                y++;
+                                eps = eps - 2*(x1-x0);
+                        }
+                }
+
+        }
+</script>
+<script>
+        var canvas = document.getElementById("lab03");
+        var ctx = canvas.getContext("2d");
+
+        var flag = 0;
+        var idata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(idata);
+        canvas.addEventListener("click", function(event){
+                        if (!flag) {
+                                x0 = event.offsetX;
+                                y0 = event.offsetY;
+                                flag = 1;
+                        } else {
+                                x1 = event.offsetX;
+                                y1 = event.offsetY;
+                                Line(idata, x0, y0, x1, y1);
+                                ctx.putImageData(idata, 0, 0);
+                                flag = 0;
+                        }
+                });
+
+</script>
+</BODY>
+</HTML>

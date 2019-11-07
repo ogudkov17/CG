@@ -1,0 +1,83 @@
+<HEAD>
+<script src='../../scripts/bresenham.js' type='text/javascript'></script>
+<script src='../../scripts/borderfill.js' type='text/javascript'></script>
+<BODY>
+<canvas id='lab07.html' width='500' height='500'></canvas>
+<script>
+	var canvas = document.getElementById('lab07.html');
+	var ctx = canvas.getContext("2d");
+
+	var w = canvas.width, h = canvas.height;
+	var maxy = 0, miny = canvas.height;	
+	var parray = new Array();
+	var n = 0;
+	var state = 0;
+
+	function drawPoly(ctx, poly) {
+		for (var i=1; i<n; i++) {
+			Line(ctx, poly[2*i], poly[2*i+1],
+					poly[2*i-2], poly[2*i-1]);
+		}
+		Line(ctx, poly[2*n-2], poly[2*n-1], poly[0], poly[1]);
+	}
+
+	canvas.addEventListener('click', function(e) {
+			if (state == 0) {
+				parray[2*n] 	= e.offsetX;
+				parray[2*n+1] 	= e.offsetY;
+				if (n!=0) {
+					Line(ctx, parray[2*n], parray[2*n+1], 
+						parray[2*n-2], parray[2*n-1]);
+				}
+				if (maxy < parray[2*n+1]) maxy = parray[2*n+1];
+				if (miny > parray[2*n+1]) miny = parray[2*n+1];
+				n++;
+			} else if (state == 1) {
+			}
+		});
+
+
+	canvas.oncontextmenu = function() { 
+		if (n>1) {
+			Line(ctx, parray[2*n-2], parray[2*n-1], parray[0], parray[1]);
+		} 
+
+
+		borderFill(ctx, parray);
+
+		state = 1;
+
+		// Преобразование
+		var M = [	1, 0, 0, 40, 
+					0, 1, 0, 20,
+					0, 0, 1, 0, 
+					0, 0, 0, 1];	
+		var Rz = [	Math.cos(0.5), -1*Math.sin(0.5), 0, 0, 
+					Math.sin(0.5), Math.cos(0.5), 0, 0,
+					0, 0, 1, 0, 
+					0, 0, 0, 1];	
+
+		function multMv(m, v) {
+			var r = new Array();
+			for (var i=0; i<4; i++) {
+				r[i] = 0;
+				for (var j=0; j<4; j++) {
+					r[i] += m[i*4+j]*v[j];
+				}
+			}	
+			return r;
+		}
+
+		var narray = new Array();
+		for (var i=0; i<n; i++) {
+			var tmp = multMv(Rz, [parray[2*i], parray[2*i+1], 0, 1] );
+			narray[2*i] = tmp[0]; narray[2*i+1] = tmp[1];
+		}
+		borderFill(ctx, narray);
+		drawPoly(ctx, narray);	
+		drawPoly(ctx, parray);	
+		return false;
+	}
+</script>
+</BODY>
+</HEAD>

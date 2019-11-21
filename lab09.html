@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<script type="text/javascript" src="../../scripts/bresenham.js"></script>
+<script type="text/javascript" src="../../scripts/borderfill.js"></script>
+<script type="text/javascript" src="../../scripts/3dfuncs.js"></script>
+</HEAD>
+<BODY>
+<canvas id='lab07' width='500' height='500'></canvas>
+<script>
+	var canvas = document.getElementById("lab07");
+	canvas.oncontextmenu = function() { return false; }
+	var ctx = canvas.getContext("2d", {antialias:false,depth: false});
+
+	var parray = new Array();
+	var rarray = new Array();
+	var state = 0;
+	var n = 0, r = 0;
+	var x0, y0;
+	var w = canvas.width, h = canvas.height;
+	var maxy = 0, miny = canvas.height;
+
+			
+
+	
+	var L={x:100, y:60, z:300};
+	var Pv = {x:50, y:55, z:20};
+	var color = 0x33ffaa;
+	var alpha = 0;
+	var radius = 150;
+	setInterval(function (){
+		alpha += .1;
+		L.x = radius * Math.cos(alpha);
+		L.y = radius * Math.sin(alpha)+40;
+		color3dPlane(L,
+					[{x:10, y:10, z:0}, Pv,
+					{x:15, y:100, z:20}], 
+					color);
+		color3dPlane(L,
+					[{x:110, y:110, z:0}, Pv,
+					{x:15, y:100, z:20}], 
+					color);
+		color3dPlane(L,
+					[{x:110, y:110, z:0}, Pv,
+					{x:100, y:15, z:10}], 
+					color);
+		color3dPlane(L,
+					[{x:100, y:15, z:10}, Pv,
+					{x:10, y:10, z:0}], 
+					color);
+		}, 200);
+
+			
+
+</script> 
+</BODY>
+</HTML>

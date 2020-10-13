@@ -1,0 +1,113 @@
+<HTML>
+<BODY>
+
+<canvas id='lab02' height='500' width='500' style='border:1px solid'>
+</canvas>
+<canvas id='lab02_2' height='500' width='500' style='border:1px solid'>
+</canvas>
+
+<script>
+	let canvas = document.getElementById('lab02');
+	let ctx = canvas.getContext('2d');
+	let canvas2 = document.getElementById('lab02_2');
+	let ctx2 = canvas2.getContext('2d');
+
+	function line(ctx, x0, y0, x1, y1) {
+		let delta = 2*(y1-y0);
+		let eps = 0;
+		let y = y0;
+		let scale = 1;
+	
+		for (let x = x0; x <= x1; x++) {
+			eps += delta;
+			if (eps >= (x1-x0)) {
+				eps -= 2*(x1-x0);
+				y++;
+			}
+			ctx.fillRect(x*scale, y*scale, 1*scale, 1*scale);
+		}
+	}
+
+
+	let img = new Image();
+	img.src = 'http://localhost:8000/rubic.png';
+	img.onload = function() {
+		ctx.drawImage(img, -350, 0);
+		
+		let img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);	
+		console.log(img_data);
+
+
+		let points = [];
+
+		let img_data2 = ctx2.createImageData(canvas.width, canvas.height);
+		for (let i=0; i<canvas.height; i++) {
+			for (let j=0; j<canvas.width; j++) {
+				if (img_data.data[4*(i*canvas.width+j)+0] < 10 &&
+					img_data.data[4*(i*canvas.width+j)+1] < 10 &&
+					img_data.data[4*(i*canvas.width+j)+2] < 10) 
+				{
+					for (let k=0; k<3; k++) {
+						img_data2.data[4*(i*canvas.width+j)+k] = 255;
+					}
+					points.push({x:j, y:i});
+				}
+				img_data2.data[4*(i*canvas.width+j)+3] = 255;
+			}
+		} 
+		ctx2.putImageData(img_data2, 0, 0);
+
+
+		console.log(points);
+		const partition=12;		// Разбиение плоскости углами
+		const threshold = 180; // Порог для принятия линии
+		let k_array = [];
+		let params2d = [];
+
+		for (let i=0; i<partition; i++) {
+			k_array.push(i*(Math.PI/partition));
+			params2d.push([]);
+		}
+
+		for (let i=0; i<partition; i++) {
+			for (let j=0; j<points.length; j++) {
+				params2d[i].push(points[j].y - k_array[i]*points[j].x);
+			}
+		}	
+
+		let d = 2;
+		for (let i=0; i<partition; i++) {
+			params2d[i].sort();
+			let base;
+			let j=0;
+			while (j<params2d[i].length) {
+				let count = 0;
+				base = params2d[i][j];
+				while (params2d[i][j]<base+d && j<params2d[i].length) {
+
+					count++;
+					j++;
+				}
+				console.log("k= "+i+" b= "+base+" count= "+count);
+				ctx2.fillStyle="#00FF00";
+				if (count > threshold) {
+					line(ctx2, 0, base, 
+						canvas2.width, k_array[i]*canvas2.width+base);
+				}
+			}
+
+		}
+
+		console.log(params2d);
+
+		
+	}
+
+
+</script>
+
+
+
+
+</BODY>
+</HTML>
